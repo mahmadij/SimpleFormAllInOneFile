@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body onload="setup()">
+<div>
+	<form>
+		<label for="word_count">
+			Enter Word Count:
+			<input type="number" name="word count" id="word_count" onblur="calculate()" />
+		</label><br/>
+		<!--This is the dropdown for proofreading-->
+		<label for="proofreading">
+			Choose the proofreading option:
+		</label><br/>
+		<select id="proofreading" onchange="addSelect('turnaround_div',this.value)">
+			<option value=""></option>
+			<option value="Premium">Premium</option>
+			<option value="Premium Plus">Premium Plus</option>
+			<option value="Standard">Standard</option>
+			<option value="Proofreading">Proofreading</option>
+			<option value="CV/Resume, Coverletter, etc.">CV/Resume, Coverletter, etc.</option>
+		</select><br/>
+		<!--This is the dropdown for turnaround-->
+		<div id="turnaround_div">
+		</div>
+		<p id="total_price">
+		</p>
+	</form>
+</div>
+<style>
+label { font-size: 16px; margin:5px 0;padding:5px 0;float:left;}
+input, select {margin:5px;padding:5px;}
+form {border:1px solid black; margin:10px; padding:10px; width:500px;}
+p { font-size: 16px; }
+</style>
+<script type="text/javascript">
+initial_select = true;
+chosen_proofreading = "";
+list_objects =[
+{
+	"name":"",
+	"list":[{"option":'',"price":'0.0'}]
+},
+{
+	"name":"Premium",
+	"list":
+		[
+			{"option":'',"price":'0.0'}, 
+			{"option":'48-HOUR Turnaround: 4.0 CENTS / PER WORD',"price":'4.0'}, 
+			{"option":'3-4 DAYS Turnaround: 3.5 CENTS / PER WORD',"price":'3.5'}, 
+			{"option":'5-6 DAYS Turnaround: 3.0 CENTS / PER WORD',"price":'3.0'}
+		]
+},
+{
+	"name":"Premium Plus",
+	"list":
+		[
+			{"option":'',"price":'0.0'}, 
+			{"option":'48-HOUR Turnaround: 5.0 CENTS / PER WORD',"price":'5.0'}, 
+			{"option":'3-4 DAYS Turnaround: 4.5 CENTS / PER WORD',"price":'4.5'},
+			{"option":'5-6 DAYS Turnaround: 4.0 CENTS / PER WORD',"price":'4.0'}
+		]
+},
+{
+	"name":"Standard",
+	"list":
+		[
+			{"option":'',"price":'0.0'}, 
+			{"option":'48-HOUR Turnaround: 3.25 CENTS / PER WORD',"price":'3.25'}, 
+			{"option":'3-4 DAYS Turnaround: 2.75 CENTS / PER WORD',"price":'2.75'}, 
+			{"option":'5-6 DAYS Turnaround: 2.40 CENTS / PER WORD',"price":'2.40'}
+		]
+},
+{
+	"name":"Proofreading",
+	"list":
+		[
+			{"option":'',"price":'0.0'}, 
+			{"option":'48-HOUR Turnaround: 3.0 CENTS / PER WORD',"price":'3.0'}, 
+			{"option":'3-4 DAYS Turnaround: 2.70 CENTS / PER WORD',"price":'2.70'}, 
+			{"option":'5-6 DAYS Turnaround: 2.40 CENTS / PER WORD',"price":'2.40'}
+		]
+},
+{
+	"name":"CV/Resume, Coverletter, etc.",
+	"list":
+		[
+			{"option":'',"price":'0.0'}, 
+			{"option":'48-HOUR Turnaround: $15 / PER PAGE',"price":'1500'}, 
+			{"option":'3+ DAYS Turnaround: $12.5 / PER PAGE',"price":'1250'}
+		]
+}
+];
+
+function addSelect(divname,op_val) 
+{
+	var myNode = document.getElementById(divname);
+	if (myNode != null)
+	{
+		while (myNode.firstChild) 
+		{
+		    myNode.removeChild(myNode.firstChild);
+		}
+	}
+   var newDiv=document.createElement('div');
+   var html = '<label for="turnaround">Choose the turnaround option:</label><br/>';
+   html += '<select id="turnaround" onchange="calculate()">';
+   var turnaroundlist = [];
+   for( j = 0; j < list_objects.length;++j)
+   {
+	   	if(list_objects[j].name==op_val)
+	   	{
+	   		for(h = 0; h<list_objects[j].list.length;++h )
+	   		{
+	   			turnaroundlist.push(list_objects[j].list[h].option);
+	   		}
+	   	}
+   }
+
+   for(i = 0; i < turnaroundlist.length; i++) 
+   {
+       html += "<option value='"+turnaroundlist[i]+"'>"+turnaroundlist[i]+"</option>";
+   }
+   html += '</select>';
+   newDiv.innerHTML= html;
+   document.getElementById(divname).appendChild(newDiv);
+   setup();
+   
+}
+
+
+function setup()
+{
+	document.getElementById("total_price").innerHTML = "Total Price: $0.00";
+}
+
+function calculate()
+{
+	
+	var p = document.getElementById("proofreading");
+	var proofreading_val = p.options[p.selectedIndex].text;
+	var t = document.getElementById("turnaround");
+	if(t != null && t.options != null)
+	{
+		var turnaround_val = t.options[t.selectedIndex].text;
+		var price = 0;
+		var x = 0;
+	    for( j = 0; j < list_objects.length;++j)
+	    {
+
+		   	if(list_objects[j].name==proofreading_val)
+		   	{
+		   		turnaroundlist = list_objects[j].list;
+		   		for( j = 0; j < turnaroundlist.length;++j)
+		   		{
+
+				   	if(turnaroundlist[j].option==turnaround_val)
+				   	{
+				   		var price = turnaroundlist[j].price;
+				   		var x = document.getElementById("word_count").value;
+				   	}
+			    }
+		   	
+		   	}
+	   	}
+
+		document.getElementById("total_price").innerHTML = ("Total Price: $" + (x*price/100));
+	}
+}
+
+
+</script>
+</body>
+</html>
